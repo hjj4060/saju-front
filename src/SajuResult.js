@@ -21,101 +21,175 @@ function SajuResult() {
     );
   }
 
-  const { success, message, data } = result;
+  const { code, message, data } = result;
+  const isSuccess = code === 'OK';
+
+  const renderPillarElement = (element, label) => {
+    if (!element) return null;
+
+    return (
+      <div className="pillar-element">
+        <div className="element-label">{label}</div>
+        <div
+          className="element-box"
+          style={{ backgroundColor: element.fiveCircleColor || '#666' }}
+        >
+          <div className="element-chinese">{element.chinese || '-'}</div>
+          <div className="element-korean">{element.korean || '-'}</div>
+        </div>
+        <div className="element-info">
+          <span className="element-detail">{element.fiveCircle || '-'}</span>
+          <span className="element-detail">{element.tenStar || '-'}</span>
+        </div>
+      </div>
+    );
+  };
+
+  const renderFortune = (fortune, title) => {
+    if (!fortune) return null;
+
+    return (
+      <div className="fortune-item">
+        <h4>{title}</h4>
+        <div className="fortune-content">
+          <div className="fortune-number">{fortune.number}</div>
+          <div className="fortune-pillars">
+            <div
+              className="fortune-element"
+              style={{ backgroundColor: fortune.sky?.fiveCircleColor || '#666' }}
+            >
+              <div className="fortune-chinese">{fortune.sky?.chinese || '-'}</div>
+              <div className="fortune-korean">{fortune.sky?.korean || '-'}</div>
+            </div>
+            <div
+              className="fortune-element"
+              style={{ backgroundColor: fortune.ground?.fiveCircleColor || '#666' }}
+            >
+              <div className="fortune-chinese">{fortune.ground?.chinese || '-'}</div>
+              <div className="fortune-korean">{fortune.ground?.korean || '-'}</div>
+            </div>
+          </div>
+          <div className="fortune-details">
+            {fortune.sky && (
+              <div className="fortune-detail-row">
+                <span>{fortune.sky.fiveCircle}</span>
+                <span>{fortune.sky.tenStar}</span>
+              </div>
+            )}
+            {fortune.ground && (
+              <div className="fortune-detail-row">
+                <span>{fortune.ground.fiveCircle}</span>
+                <span>{fortune.ground.tenStar}</span>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="saju-result-container">
-      <h1>사주 조회 결과</h1>
+      <h1>사주 만세력 결과</h1>
 
       <button onClick={() => navigate('/')} className="back-button">
         ← 새로운 조회
       </button>
 
-      {!success && (
+      {!isSuccess && (
         <div className="error-message">
           <h3>조회 실패</h3>
           <p>{message || '사주 조회에 실패했습니다.'}</p>
         </div>
       )}
 
-      {success && data && (
+      {isSuccess && data && (
         <div className="result-content">
-          <div className="result-section">
-            <h2>기본 정보</h2>
-            <div className="info-grid">
-              {data.birthDate && (
-                <div className="info-item">
-                  <span className="info-label">생년월일:</span>
-                  <span className="info-value">{data.birthDate}</span>
-                </div>
-              )}
-              {data.birthTime && (
-                <div className="info-item">
-                  <span className="info-label">출생시간:</span>
-                  <span className="info-value">{data.birthTime}</span>
-                </div>
-              )}
-              {data.gender !== undefined && (
-                <div className="info-item">
-                  <span className="info-label">성별:</span>
-                  <span className="info-value">{data.gender === 1 ? '남자' : '여자'}</span>
-                </div>
-              )}
-              {data.birthdayType && (
-                <div className="info-item">
-                  <span className="info-label">생일 구분:</span>
-                  <span className="info-value">{data.birthdayType === 'SOLAR' ? '양력' : '음력'}</span>
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div className="result-section">
-            <h2>사주 정보</h2>
-            <div className="saju-pillars">
-              {data.yearPillar && (
-                <div className="pillar">
-                  <h3>년주 (年柱)</h3>
-                  <div className="pillar-content">
-                    <div className="stem">{data.yearPillar.heavenlyStem || '-'}</div>
-                    <div className="branch">{data.yearPillar.earthlyBranch || '-'}</div>
-                  </div>
-                </div>
-              )}
-              {data.monthPillar && (
-                <div className="pillar">
-                  <h3>월주 (月柱)</h3>
-                  <div className="pillar-content">
-                    <div className="stem">{data.monthPillar.heavenlyStem || '-'}</div>
-                    <div className="branch">{data.monthPillar.earthlyBranch || '-'}</div>
-                  </div>
-                </div>
-              )}
-              {data.dayPillar && (
-                <div className="pillar">
-                  <h3>일주 (日柱)</h3>
-                  <div className="pillar-content">
-                    <div className="stem">{data.dayPillar.heavenlyStem || '-'}</div>
-                    <div className="branch">{data.dayPillar.earthlyBranch || '-'}</div>
-                  </div>
-                </div>
-              )}
-              {data.hourPillar && (
-                <div className="pillar">
+          {/* 사주 팔자 */}
+          {data.saju && (
+            <div className="result-section">
+              <h2>사주 팔자 (四柱八字)</h2>
+              <div className="saju-pillars-horizontal">
+                <div className="pillar-column">
                   <h3>시주 (時柱)</h3>
-                  <div className="pillar-content">
-                    <div className="stem">{data.hourPillar.heavenlyStem || '-'}</div>
-                    <div className="branch">{data.hourPillar.earthlyBranch || '-'}</div>
+                  {renderPillarElement(data.saju.timeSky, '시간')}
+                  {renderPillarElement(data.saju.timeGround, '시지')}
+                </div>
+                <div className="pillar-column">
+                  <h3>일주 (日柱)</h3>
+                  {renderPillarElement(data.saju.daySky, '일간')}
+                  {renderPillarElement(data.saju.dayGround, '일지')}
+                </div>
+                <div className="pillar-column">
+                  <h3>월주 (月柱)</h3>
+                  {renderPillarElement(data.saju.monthSky, '월간')}
+                  {renderPillarElement(data.saju.monthGround, '월지')}
+                </div>
+                <div className="pillar-column">
+                  <h3>년주 (年柱)</h3>
+                  {renderPillarElement(data.saju.yearSky, '년간')}
+                  {renderPillarElement(data.saju.yearGround, '년지')}
+                </div>
+              </div>
+
+              {data.saju.bigFortuneNumber !== undefined && (
+                <div className="basic-info">
+                  <div className="info-row">
+                    <span className="info-label">대운수:</span>
+                    <span className="info-value">{data.saju.bigFortuneNumber}</span>
                   </div>
+                  {data.saju.bigFortuneStartYear && (
+                    <div className="info-row">
+                      <span className="info-label">대운 시작년도:</span>
+                      <span className="info-value">{data.saju.bigFortuneStartYear}년</span>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
-          </div>
+          )}
 
-          <div className="result-section">
-            <h2>전체 데이터 (JSON)</h2>
-            <pre className="json-data">{JSON.stringify(data, null, 2)}</pre>
-          </div>
+          {/* 운세 정보 */}
+          {data.fortune && (
+            <div className="result-section">
+              <h2>운세 정보</h2>
+              <div className="fortune-grid">
+                {renderFortune(data.fortune.bigFortune, '대운 (大運)')}
+                {renderFortune(data.fortune.smallFortune, '세운 (歲運)')}
+                {renderFortune(data.fortune.monthFortune, '월운 (月運)')}
+                {renderFortune(data.fortune.dayFortune, '일운 (日運)')}
+              </div>
+            </div>
+          )}
+
+          {/* 시간 조정 정보 */}
+          {data.saju?.timeAdjustment && (
+            <div className="result-section">
+              <h2>시간 조정 정보</h2>
+              <div className="info-grid">
+                <div className="info-item">
+                  <span className="info-label">경도 조정:</span>
+                  <span className="info-value">
+                    {data.saju.timeAdjustment.longitudeAdjustmentMinutes?.toFixed(2)}분
+                  </span>
+                </div>
+                <div className="info-item">
+                  <span className="info-label">섬머타임:</span>
+                  <span className="info-value">
+                    {data.saju.timeAdjustment.isDaylightSavingTime ? '적용' : '미적용'}
+                  </span>
+                </div>
+                {data.saju.timeAdjustment.totalAdjustmentMinutes !== undefined && (
+                  <div className="info-item">
+                    <span className="info-label">총 조정:</span>
+                    <span className="info-value">
+                      {data.saju.timeAdjustment.totalAdjustmentMinutes?.toFixed(2)}분
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
