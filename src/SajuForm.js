@@ -1,18 +1,14 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useRef } from 'react';
 import CitySearchModal from './CitySearchModal';
 import './SajuForm.css';
 
 function SajuForm() {
-  const navigate = useNavigate();
-
   const [formData, setFormData] = useState({
     birthDate: '',
     birthTime: '',
     gender: 1,
     birthdayType: 'SOLAR',
     isLeapMonth: false,
-    isDaylightSavingTime: false,
     geonameId: ''
   });
 
@@ -21,6 +17,8 @@ function SajuForm() {
   const [isTimeUnknown, setIsTimeUnknown] = useState(false);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState(null);
+  const resultRef = useRef(null);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -61,7 +59,7 @@ function SajuForm() {
         gender: formData.gender,
         birthdayType: formData.birthdayType,
         isLeapMonth: formData.isLeapMonth,
-        isDaylightSavingTime: formData.isDaylightSavingTime,
+        isDaylightSavingTime: false,
         geonameId: formData.geonameId
       });
 
@@ -82,13 +80,83 @@ function SajuForm() {
 
       const data = await response.json();
 
-      // 결과 페이지로 이동
-      navigate('/result', { state: { result: data } });
+      // 결과를 state에 저장
+      setResult(data);
+
+      // 결과 영역으로 스크롤
+      setTimeout(() => {
+        resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
     } catch (err) {
       setError(err.message);
+      setResult(null);
     } finally {
       setLoading(false);
     }
+  };
+
+  const renderPillarElement = (element, label) => {
+    if (!element) return null;
+
+    return (
+      <div className="pillar-element">
+        <div className="element-label">{label}</div>
+        <div
+          className="element-box"
+          style={{ backgroundColor: element.fiveCircleColor || '#666' }}
+        >
+          <div className="element-chinese">{element.chinese || '-'}</div>
+          <div className="element-korean">{element.korean || '-'}</div>
+        </div>
+        <div className="element-info">
+          <span className="element-detail">{element.fiveCircle || '-'}</span>
+          <span className="element-detail">{element.tenStar || '-'}</span>
+        </div>
+      </div>
+    );
+  };
+
+  const renderFortune = (fortune, title) => {
+    if (!fortune) return null;
+
+    return (
+      <div className="fortune-item">
+        <h4>{title}</h4>
+        <div className="fortune-content">
+          <div className="fortune-number">{fortune.number}</div>
+          <div className="fortune-pillars">
+            <div
+              className="fortune-element"
+              style={{ backgroundColor: fortune.sky?.fiveCircleColor || '#666' }}
+            >
+              <div className="fortune-chinese">{fortune.sky?.chinese || '-'}</div>
+              <div className="fortune-korean">{fortune.sky?.korean || '-'}</div>
+            </div>
+            <div
+              className="fortune-element"
+              style={{ backgroundColor: fortune.ground?.fiveCircleColor || '#666' }}
+            >
+              <div className="fortune-chinese">{fortune.ground?.chinese || '-'}</div>
+              <div className="fortune-korean">{fortune.ground?.korean || '-'}</div>
+            </div>
+          </div>
+          <div className="fortune-details">
+            {fortune.sky && (
+              <div className="fortune-detail-row">
+                <span>{fortune.sky.fiveCircle}</span>
+                <span>{fortune.sky.tenStar}</span>
+              </div>
+            )}
+            {fortune.ground && (
+              <div className="fortune-detail-row">
+                <span>{fortune.ground.fiveCircle}</span>
+                <span>{fortune.ground.tenStar}</span>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -201,18 +269,6 @@ function SajuForm() {
         )}
 
         <div className="form-group">
-          <label>
-            <input
-              type="checkbox"
-              name="isDaylightSavingTime"
-              checked={formData.isDaylightSavingTime}
-              onChange={handleChange}
-            />
-            섬머타임 적용
-          </label>
-        </div>
-
-        <div className="form-group">
           <label htmlFor="cityName">출생 도시 *</label>
           <div className="input-with-button">
             <input
@@ -253,6 +309,118 @@ function SajuForm() {
         onClose={() => setIsModalOpen(false)}
         onSelectCity={handleCitySelect}
       />
+
+      {/* 결과 영역 */}
+      {result && (
+        <div className="result-section-container" ref={resultRef}>
+          <div className="result-header">
+            <h2>사주 만세력 결과</h2>
+            <button
+              onClick={() => setResult(null)}
+              className="clear-result-button"
+            >
+              결과 지우기
+            </button>
+          </div>
+
+          {result.code !== 'OK' && (
+            <div className="error-message">
+              <h3>조회 실패</h3>
+              <p>{result.message || '사주 조회에 실패했습니다.'}</p>
+            </div>
+          )}
+
+          {result.code === 'OK' && result.data && (
+            <div className="result-content">
+              {/* 사주 팔자 */}
+              {result.data.saju && (
+                <div className="result-section">
+                  <h3>사주 팔자 (四柱八字)</h3>
+                  <div className="saju-pillars-horizontal">
+                    <div className="pillar-column">
+                      <h4>시주 (時柱)</h4>
+                      {renderPillarElement(result.data.saju.timeSky, '시간')}
+                      {renderPillarElement(result.data.saju.timeGround, '시지')}
+                    </div>
+                    <div className="pillar-column">
+                      <h4>일주 (日柱)</h4>
+                      {renderPillarElement(result.data.saju.daySky, '일간')}
+                      {renderPillarElement(result.data.saju.dayGround, '일지')}
+                    </div>
+                    <div className="pillar-column">
+                      <h4>월주 (月柱)</h4>
+                      {renderPillarElement(result.data.saju.monthSky, '월간')}
+                      {renderPillarElement(result.data.saju.monthGround, '월지')}
+                    </div>
+                    <div className="pillar-column">
+                      <h4>년주 (年柱)</h4>
+                      {renderPillarElement(result.data.saju.yearSky, '년간')}
+                      {renderPillarElement(result.data.saju.yearGround, '년지')}
+                    </div>
+                  </div>
+
+                  {result.data.saju.bigFortuneNumber !== undefined && (
+                    <div className="basic-info">
+                      <div className="info-row">
+                        <span className="info-label">대운수:</span>
+                        <span className="info-value">{result.data.saju.bigFortuneNumber}</span>
+                      </div>
+                      {result.data.saju.bigFortuneStartYear && (
+                        <div className="info-row">
+                          <span className="info-label">대운 시작년도:</span>
+                          <span className="info-value">{result.data.saju.bigFortuneStartYear}년</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* 운세 정보 */}
+              {result.data.fortune && (
+                <div className="result-section">
+                  <h3>운세 정보</h3>
+                  <div className="fortune-grid">
+                    {renderFortune(result.data.fortune.bigFortune, '대운 (大運)')}
+                    {renderFortune(result.data.fortune.smallFortune, '세운 (歲運)')}
+                    {renderFortune(result.data.fortune.monthFortune, '월운 (月運)')}
+                    {renderFortune(result.data.fortune.dayFortune, '일운 (日運)')}
+                  </div>
+                </div>
+              )}
+
+              {/* 시간 조정 정보 */}
+              {result.data.saju?.timeAdjustment && (
+                <div className="result-section">
+                  <h3>시간 조정 정보</h3>
+                  <div className="info-grid">
+                    <div className="info-item">
+                      <span className="info-label">경도 조정:</span>
+                      <span className="info-value">
+                        {result.data.saju.timeAdjustment.longitudeAdjustmentMinutes?.toFixed(2)}분
+                      </span>
+                    </div>
+                    <div className="info-item">
+                      <span className="info-label">섬머타임:</span>
+                      <span className="info-value">
+                        {result.data.saju.timeAdjustment.isDaylightSavingTime ? '적용(-60분)' : '미적용'}
+                      </span>
+                    </div>
+                    {result.data.saju.timeAdjustment.totalAdjustmentMinutes !== undefined && (
+                      <div className="info-item">
+                        <span className="info-label">총 조정:</span>
+                        <span className="info-value">
+                          {result.data.saju.timeAdjustment.totalAdjustmentMinutes?.toFixed(2)}분
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

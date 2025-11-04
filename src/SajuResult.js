@@ -176,7 +176,7 @@ function SajuResult() {
                 <div className="info-item">
                   <span className="info-label">섬머타임:</span>
                   <span className="info-value">
-                    {data.saju.timeAdjustment.isDaylightSavingTime ? '적용' : '미적용'}
+                    {data.saju.timeAdjustment.isDaylightSavingTime ? '적용(-60분)' : '미적용'}
                   </span>
                 </div>
                 {data.saju.timeAdjustment.totalAdjustmentMinutes !== undefined && (
