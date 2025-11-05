@@ -199,6 +199,19 @@ function SajuForm() {
     );
   };
 
+  const formatSolarTermTime = (timeStr) => {
+    if (!timeStr || timeStr.length !== 12) return timeStr;
+
+    // YYYYMMDDHHmm 형식을 파싱
+    const year = timeStr.substring(0, 4);
+    const month = timeStr.substring(4, 6);
+    const day = timeStr.substring(6, 8);
+    const hour = timeStr.substring(8, 10);
+    const minute = timeStr.substring(10, 12);
+
+    return `${year}년 ${month}월 ${day}일 ${hour}시 ${minute}분`;
+  };
+
   return (
     <div className="saju-form-container">
       <h1>사주 만세력 조회</h1>
@@ -416,6 +429,61 @@ function SajuForm() {
                 </div>
               )}
 
+              {/* 시간 조정 및 절기 정보 */}
+              {result.data.saju && (
+                <div className="result-section">
+                  <h3>시간 조정 및 절기 정보</h3>
+                  <div className="info-grid">
+                    {result.data.saju.timeAdjustment && (
+                      <>
+                        <div className="info-item">
+                          <span className="info-label">경도 조정:</span>
+                          <span className="info-value">
+                            {result.data.saju.timeAdjustment.longitudeAdjustmentMinutes?.toFixed(2)}분
+                          </span>
+                        </div>
+                        <div className="info-item">
+                          <span className="info-label">섬머타임:</span>
+                          <span className="info-value">
+                            {result.data.saju.timeAdjustment.isDaylightSavingTime ? '적용(-60분)' : '미적용'}
+                          </span>
+                        </div>
+                        {result.data.saju.timeAdjustment.totalAdjustmentMinutes !== undefined && (
+                          <div className="info-item">
+                            <span className="info-label">총 조정:</span>
+                            <span className="info-value">
+                              {result.data.saju.timeAdjustment.totalAdjustmentMinutes?.toFixed(2)}분
+                            </span>
+                          </div>
+                        )}
+                      </>
+                    )}
+
+                  </div>
+
+                    <div className="info-grid">
+                        {result.data.saju.previousSeason && (
+                            <div className="info-item">
+                                <span className="info-label">이전 절기:</span>
+                                <span className="info-value">
+                          {result.data.saju.previousSeason.solarTermKor} ({result.data.saju.previousSeason.solarTermHanja}) - {formatSolarTermTime(result.data.saju.previousSeason.solarTermTime)}
+                        </span>
+                            </div>
+                        )}
+                        {result.data.saju.nextSeason && (
+                            <div className="info-item">
+                                <span className="info-label">다음 절기:</span>
+                                <span className="info-value">
+                          {result.data.saju.nextSeason.solarTermKor} ({result.data.saju.nextSeason.solarTermHanja}) - {formatSolarTermTime(result.data.saju.nextSeason.solarTermTime)}
+                        </span>
+                            </div>
+                        )}
+                    </div>
+
+                </div>
+              )}
+
+
               {/* 운세 정보 */}
               {result.data.fortune && (
                 <div className="result-section">
@@ -441,35 +509,6 @@ function SajuForm() {
                         </div>
                       ))}
                     </div>
-                  </div>
-                </div>
-              )}
-
-              {/* 시간 조정 정보 */}
-              {result.data.saju?.timeAdjustment && (
-                <div className="result-section">
-                  <h3>시간 조정 정보</h3>
-                  <div className="info-grid">
-                    <div className="info-item">
-                      <span className="info-label">경도 조정:</span>
-                      <span className="info-value">
-                        {result.data.saju.timeAdjustment.longitudeAdjustmentMinutes?.toFixed(2)}분
-                      </span>
-                    </div>
-                    <div className="info-item">
-                      <span className="info-label">섬머타임:</span>
-                      <span className="info-value">
-                        {result.data.saju.timeAdjustment.isDaylightSavingTime ? '적용(-60분)' : '미적용'}
-                      </span>
-                    </div>
-                    {result.data.saju.timeAdjustment.totalAdjustmentMinutes !== undefined && (
-                      <div className="info-item">
-                        <span className="info-label">총 조정:</span>
-                        <span className="info-value">
-                          {result.data.saju.timeAdjustment.totalAdjustmentMinutes?.toFixed(2)}분
-                        </span>
-                      </div>
-                    )}
                   </div>
                 </div>
               )}
