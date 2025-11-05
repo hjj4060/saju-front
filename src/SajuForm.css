@@ -522,6 +522,138 @@ h1 {
   color: #555;
 }
 
+/* 대운 정보 스타일 */
+.big-fortune-container {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.big-fortune-scroll {
+  display: flex;
+  gap: 15px;
+  overflow-x: auto;
+  padding: 10px 0;
+  direction: rtl;
+  scroll-behavior: smooth;
+}
+
+.big-fortune-scroll > div {
+  direction: ltr;
+  flex-shrink: 0;
+}
+
+.big-fortune-scroll::-webkit-scrollbar {
+  height: 8px;
+}
+
+.big-fortune-scroll::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.big-fortune-scroll::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.big-fortune-scroll::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.big-fortune-item {
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+  border: 1px solid #e8e8e8;
+  min-width: 180px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.big-fortune-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.18);
+}
+
+.big-fortune-age {
+  text-align: center;
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 12px;
+  padding: 6px;
+  background: #f5f5f5;
+  border-radius: 4px;
+  border-left: 4px solid #FF9800;
+}
+
+.big-fortune-pillars {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.big-fortune-element {
+  flex: 1;
+  border-radius: 6px;
+  padding: 12px 8px;
+  text-align: center;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+  border: 2px solid rgba(0, 0, 0, 0.1);
+  min-height: 70px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transition: transform 0.2s;
+}
+
+.big-fortune-element:hover {
+  transform: scale(1.05);
+}
+
+.big-fortune-chinese {
+  font-size: 24px;
+  font-weight: bold;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+  margin-bottom: 3px;
+  line-height: 1.2;
+}
+
+.big-fortune-korean {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.98);
+  font-weight: 600;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.big-fortune-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.big-fortune-detail-row {
+  display: flex;
+  justify-content: space-around;
+  gap: 4px;
+  font-size: 10px;
+  color: #666;
+  padding: 4px 0;
+}
+
+.big-fortune-detail-row span {
+  background: #f8f9fa;
+  padding: 3px 8px;
+  border-radius: 3px;
+  font-weight: 600;
+  border: 1px solid #e0e0e0;
+  color: #555;
+  font-size: 10px;
+}
+
 /* 시간 조정 정보 */
 .info-grid {
   display: grid;

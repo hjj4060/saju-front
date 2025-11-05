@@ -67,7 +67,7 @@ function SajuForm() {
         params.append('birthTime', formData.birthTime);
       }
 
-      const response = await fetch(`/api/v1/manse?${params}`, {
+      const response = await fetch(`/api/v1//manse?${params}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -154,6 +154,46 @@ function SajuForm() {
               </div>
             )}
           </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderBigFortuneItem = (fortune) => {
+    if (!fortune) return null;
+
+    return (
+      <div className="big-fortune-item">
+        <div className="big-fortune-age">{fortune.number}세</div>
+        <div className="big-fortune-pillars">
+          <div
+            className="big-fortune-element"
+            style={{ backgroundColor: fortune.sky?.fiveCircleColor || '#666' }}
+          >
+            <div className="big-fortune-chinese">{fortune.sky?.chinese || '-'}</div>
+            <div className="big-fortune-korean">{fortune.sky?.korean || '-'}</div>
+          </div>
+          <div
+            className="big-fortune-element"
+            style={{ backgroundColor: fortune.ground?.fiveCircleColor || '#666' }}
+          >
+            <div className="big-fortune-chinese">{fortune.ground?.chinese || '-'}</div>
+            <div className="big-fortune-korean">{fortune.ground?.korean || '-'}</div>
+          </div>
+        </div>
+        <div className="big-fortune-details">
+          {fortune.sky && (
+            <div className="big-fortune-detail-row">
+              <span>{fortune.sky.fiveCircle}</span>
+              <span>{fortune.sky.tenStar}</span>
+            </div>
+          )}
+          {fortune.ground && (
+            <div className="big-fortune-detail-row">
+              <span>{fortune.ground.fiveCircle}</span>
+              <span>{fortune.ground.tenStar}</span>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -368,7 +408,7 @@ function SajuForm() {
                       {result.data.saju.bigFortuneStartYear && (
                         <div className="info-row">
                           <span className="info-label">대운 시작년도:</span>
-                          <span className="info-value">{result.data.saju.bigFortuneStartYear}년</span>
+                          <span className="info-value">{result.data.saju.bigFortuneStartYear}년, {result.data.saju.bigFortuneDirection}</span>
                         </div>
                       )}
                     </div>
@@ -385,6 +425,22 @@ function SajuForm() {
                     {renderFortune(result.data.fortune.smallFortune, '세운 (歲運)')}
                     {renderFortune(result.data.fortune.monthFortune, '월운 (月運)')}
                     {renderFortune(result.data.fortune.dayFortune, '일운 (日運)')}
+                  </div>
+                </div>
+              )}
+
+              {/* 대운 정보 */}
+              {result.data.bigFortuneList && result.data.bigFortuneList.length > 0 && (
+                <div className="result-section">
+                  <h3>대운 (大運)</h3>
+                  <div className="big-fortune-container">
+                    <div className="big-fortune-scroll">
+                      {result.data.bigFortuneList.map((fortune, index) => (
+                        <div key={index}>
+                          {renderBigFortuneItem(fortune)}
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               )}
