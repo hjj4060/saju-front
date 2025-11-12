@@ -416,12 +416,12 @@ function SajuForm() {
                     <div className="basic-info">
                       <div className="info-row">
                         <span className="info-label">대운수:</span>
-                        <span className="info-value">{result.data.saju.bigFortuneNumber}</span>
+                        <span className="info-value">생후{result.data.saju.bigFortuneNumber}년  {result.data.saju.bigFortuneStartMonth}개월 {result.data.saju.bigFortuneStartDay}일</span>
                       </div>
                       {result.data.saju.bigFortuneStartYear && (
                         <div className="info-row">
                           <span className="info-label">대운 시작년도:</span>
-                          <span className="info-value">{result.data.saju.bigFortuneStartYear}년 {result.data.saju.bigFortuneStartMonth}개월 {result.data.saju.bigFortuneStartDay}일, {result.data.saju.bigFortuneDirection}</span>
+                          <span className="info-value">{result.data.saju.bigFortuneStartYear}년,  {result.data.saju.bigFortuneDirection}</span>
                         </div>
                       )}
                     </div>
