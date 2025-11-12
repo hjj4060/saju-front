@@ -421,7 +421,7 @@ function SajuForm() {
                       {result.data.saju.bigFortuneStartYear && (
                         <div className="info-row">
                           <span className="info-label">대운 시작년도:</span>
-                          <span className="info-value">{result.data.saju.bigFortuneStartYear}년, {result.data.saju.bigFortuneDirection}</span>
+                          <span className="info-value">{result.data.saju.bigFortuneStartYear}년 {result.data.saju.bigFortuneStartMonth}개월 {result.data.saju.bigFortuneStartDay}일, {result.data.saju.bigFortuneDirection}</span>
                         </div>
                       )}
                     </div>
